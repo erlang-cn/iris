@@ -43,9 +43,9 @@ brew cask install xquartz
 
 echo -e "\n${GREEN}  --->  installing/upgrading pipenv ${NC}\n"
 if command -v pipenv &>/dev/null; then
-    brew upgrade pipenv
+    pip install --upgrade pipenv
 else
-    brew install pipenv
+    pip install pipenv
 fi
 
 echo -e "\n${GREEN}--->  Installing pyobjc library #####${NC}\n"
