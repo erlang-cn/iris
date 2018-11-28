@@ -11,7 +11,6 @@ class Test(BaseTest):
     def __init__(self):
         BaseTest.__init__(self)
         self.meta = 'This is a unit test for ocr.'
-        self.exclude = Platform.ALL
 
     def run(self):
         url = self.get_asset_path('ocr.html')
@@ -22,11 +21,11 @@ class Test(BaseTest):
 
         page_region = generate_region_by_markers(top_left_marker, bottom_right_marker)
         page_region.debug()
-        left_half_page_region = Region(page_region.x, page_region.y, page_region.w / 3, page_region.h)
+        left_half_page_region = Region(page_region.x, page_region.y, page_region.width / 3, page_region.height)
         left_half_page_region.debug()
 
         right_half_page_region = Region(
-            page_region.w - (page_region.w / 2), page_region.y, page_region.w / 2, page_region.h)
+            page_region.width - (page_region.width/ 2), page_region.y, page_region.width / 2, page_region.height)
         right_half_page_region.debug()
 
         assert_true(self, left_half_page_region.exists('Lorem'), 'Word found')
