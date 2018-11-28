@@ -59,6 +59,7 @@ if command -v tesseract &>/dev/null; then
     if [[ $(tesseract -v | grep "tesseract 3.05") ]]; then
         echo -e "${RED}  --->  You have Tesseract 3, removing and installing Tesseract 4.${NC}\n"
         powershell -Command "scoop uninstall tesseract3"
+        powershell -Command "scoop uninstall tesseract"
         powershell -Command "scoop install tesseract"
     else
         echo -e "${GREEN}    --->  Tesseract is the correct version. ${NC}\n"

@@ -27,12 +27,12 @@ if command -v tesseract -v >/dev/null 2>&1; then
     echo -e "${GREEN}    --->  Checking Tesseract version. ${NC}\n"
     if [[ $(tesseract -v | grep "tesseract 3.05") ]]; then
         echo -e "${RED}  --->  You have Tesseract 3, removing and installing Tesseract 4.${NC}\n"
-        brew upgrade tesseract
+        brew upgrade tesseract --with-all-languages --with-training-tools --with-serial-num-pack
     else
         echo -e "${GREEN}    --->  Tesseract is the correct version. ${NC}\n"
     fi
 else
-    brew install tesseract
+    brew install tesseract --with-all-languages --with-training-tools --with-serial-num-pack
 fi
 
 echo -e "\n${GREEN}  --->  installing/updating p7zip ${NC} \n"
