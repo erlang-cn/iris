@@ -111,7 +111,7 @@ class OCRSearch:
         match_min_len = 12
         input_image = stack_image
         input_image_array = np.array(input_image)
-        self.debug_img = input_image_array
+        debug_img = input_image_array
 
         if with_image_processing:
             input_image = process_image_for_ocr(image_array=input_image)
@@ -171,7 +171,7 @@ class OCRSearch:
         if not isinstance(what, str):
             return ValueError(INVALID_GENERIC_INPUT)
 
-        text_dict, debug_img, self.debug_data = self.text_search_all(True, in_region)
+        text_dict, self.debug_img, self.debug_data = self.text_search_all(True, in_region)
 
         if len(text_dict) <= 0:
             return None
