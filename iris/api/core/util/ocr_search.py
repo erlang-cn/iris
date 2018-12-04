@@ -62,7 +62,47 @@ class OCRSearch:
         else:
             return None
 
-    def text_search_all(self, with_image_processing, in_region=None, in_image=None):
+    def search_for_word(self, local_what, local_text_dict, local_multiple_matches):
+        return_multiple = []
+        return_single = None
+
+        for local_match_index, local_match_object in enumerate(local_text_dict):
+            if local_what == local_match_object['value']:
+                if local_multiple_matches:
+                    return_multiple.append(local_match_object)
+                else:
+                    self.save_ocr_debug_image(self.debug_img, [self.debug_data[local_match_index]])
+                    return_single = local_match_object
+
+        return return_multiple, return_single
+
+    def search_for_phrase(self, local_what, local_text_dict):
+        return_single = None
+
+        matches_string = self.ocr_matches_to_string(local_text_dict)
+        if local_what not in matches_string:
+            return None
+
+        l_what_words = local_what.split()
+        l_words_len = len(l_what_words)
+        temp_matches = []
+        temp_debug = []
+
+        phrase_start_index = matches_string.find(local_what)
+        phrase_first_match_index = len(matches_string[0:phrase_start_index].split())
+
+        if l_words_len > 0:
+            for local_match_index, local_match_object in enumerate(local_text_dict):
+                if local_match_index >= phrase_first_match_index:
+                    for word_index, searched_word in enumerate(l_what_words):
+                        if searched_word == local_match_object['value']:
+                            temp_matches.append(local_match_object)
+                            temp_debug.append(self.debug_data[local_match_index])
+            return_single = self.combine_text_matches(temp_matches, local_what)
+            self.save_ocr_debug_image(self.debug_img, temp_debug)
+        return return_single
+
+    def text_search_all(self, image_processing, in_region=None, in_image=None):
         if in_image is None:
             stack_image = IrisCore.get_region(in_region, True)
         else:
@@ -71,19 +111,19 @@ class OCRSearch:
         match_min_len = 12
         input_image = stack_image
         input_image_array = np.array(input_image)
-        debug_img = input_image_array
+        self.debug_img = input_image_array
 
-        if with_image_processing:
+        if image_processing:
             input_image = process_image_for_ocr(image_array=input_image)
             input_image_array = np.array(input_image)
-            debug_img = cv2.cvtColor(input_image_array, cv2.COLOR_GRAY2BGR)
+            self.debug_img = cv2.cvtColor(input_image_array, cv2.COLOR_GRAY2BGR)
 
         processed_data = pytesseract.image_to_data(input_image)
 
         length_x, width_y = stack_image.size
         dpi_factor = max(1, int(OCR_IMAGE_SIZE / length_x))
 
-        final_data, debug_data = [], []
+        final_data, self.debug_data = [], []
         is_uhd, uhd_factor = IrisCore.get_uhd_details()
 
         for line in processed_data.split('\n'):
@@ -98,7 +138,7 @@ class OCRSearch:
                                     'precision': float(precision),
                                     'value': str(data[11])
                                     }
-                    debug_data.append(virtual_data)
+                    self.debug_data.append(virtual_data)
 
                     scale_divider = uhd_factor if is_uhd else 1
 
@@ -125,13 +165,13 @@ class OCRSearch:
                 continue
 
         # save_ocr_debug_image(debug_img, debug_data)
-        return final_data, debug_img, debug_data
+        return final_data, self.debug_img, self.debug_data
 
     def text_search_by(self, what, match_case=True, in_region=None, multiple_matches=False):
         if not isinstance(what, str):
             return ValueError(INVALID_GENERIC_INPUT)
 
-        text_dict, debug_img, debug_data = self.text_search_all(True, in_region)
+        text_dict, debug_img, debug_data = self.text_search_all(False, in_region)
 
         if len(text_dict) <= 0:
             return None
@@ -215,43 +255,3 @@ class OCRSearch:
             else:
                 save_debug_image(what, in_region, None, True)
                 return None
-
-    def search_for_word(self, local_what, local_text_dict, local_multiple_matches):
-        return_multiple = []
-        return_single = None
-
-        for local_match_index, local_match_object in enumerate(local_text_dict):
-            if local_what == local_match_object['value']:
-                if local_multiple_matches:
-                    return_multiple.append(local_match_object)
-                else:
-                    self.save_ocr_debug_image(self.debug_img, [self.debug_data[local_match_index]])
-                    return_single = local_match_object
-
-        return return_multiple, return_single
-
-    def search_for_phrase(self, local_what, local_text_dict):
-        return_single = None
-
-        matches_string = self.ocr_matches_to_string(local_text_dict)
-        if local_what not in matches_string:
-            return None
-
-        l_what_words = local_what.split()
-        l_words_len = len(l_what_words)
-        temp_matches = []
-        temp_debug = []
-
-        phrase_start_index = matches_string.find(local_what)
-        phrase_first_match_index = len(matches_string[0:phrase_start_index].split())
-
-        if l_words_len > 0:
-            for local_match_index, local_match_object in enumerate(local_text_dict):
-                if local_match_index >= phrase_first_match_index:
-                    for word_index, searched_word in enumerate(l_what_words):
-                        if searched_word == local_match_object['value']:
-                            temp_matches.append(local_match_object)
-                            temp_debug.append(self.debug_data[local_match_index])
-            return_single = self.combine_text_matches(temp_matches, local_what)
-            self.save_ocr_debug_image(self.debug_img, temp_debug)
-        return return_single

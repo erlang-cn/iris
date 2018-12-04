@@ -76,12 +76,12 @@ class Region(object):
         """Saves input image for debug. """
         save_debug_image(None, self, None)
 
-    def debug_ocr(self, with_image_processing=True):
+    def debug_ocr(self, image_processing=True):
         """
         :param with_image_processing: With extra dpi and contrast image processing.
         :return: Call the text() method.
         """
-        return self.text(with_image_processing, True)
+        return self.text(image_processing, True)
 
     def show(self):
         """Displays the screen region. This method is mainly intended for debugging purposes."""
@@ -149,13 +149,13 @@ class Region(object):
         """
         return click(where, duration, self)
 
-    def text(self, with_image_processing, with_debug=False):
+    def text(self, image_processing, with_debug=False):
         """
         :param bool with_image_processing: With extra dpi and contrast image processing.
         :param bool with_debug: Boolean for saving ocr images.
         :return: Call the text() method.
         """
-        return text(with_image_processing, self, with_debug)
+        return text(image_processing, self, with_debug)
 
     def highlight(self, seconds=None, color=None):
         """
@@ -392,7 +392,7 @@ def create_region_from_patterns(top=None, bottom=None, left=None, right=None, pa
     return found_region
 
 
-def text(with_image_processing, in_region=None, debug=False):
+def text(image_processing, in_region=None, debug=False):
     """Get all text from a Region or full screen.
 
     :param bool with_image_processing: With extra dpi and contrast image processing.
@@ -402,7 +402,7 @@ def text(with_image_processing, in_region=None, debug=False):
     """
 
     ocr_search = OCRSearch()
-    all_text, debug_img, debug_data = ocr_search.text_search_all(with_image_processing, in_region)
+    all_text, debug_img, debug_data = ocr_search.text_search_all(image_processing, in_region)
     if debug and debug_img is not None:
         ocr_search.save_ocr_debug_image(debug_img, debug_data)
         logger.debug('> Found message: %s' % ocr_search.ocr_matches_to_string(all_text))

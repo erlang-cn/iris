@@ -59,13 +59,17 @@ class Test(BaseTest):
         click(bottom_right_marker)
         time.sleep(1)
         left_half_page_region.debug()
+        assert_true(self, left_half_page_region.exists('Quisque'), '"Quisque" found')
         assert_true(self, left_half_page_region.exists('Library'), 'Word found')
         assert_true(self, left_half_page_region.exists('Find in This Page'), 'Phrase found')
         assert_true(self, left_half_page_region.exists('New Private Window'), 'Phrase found')
 
         click(NavBar.HAMBURGER_MENU)
-        time.sleep(1)
+        time.sleep(2)
 
+        # assert_true(self, right_half_page_region.exists('Sign in to Sync'), '"Sign in to Sync" found')
+        # assert_true(self, right_half_page_region.exists('Content Blocking'), '"Content Blocking" found')
+        assert_true(self, right_half_page_region.exists('Help'), 'Word found')
         assert_true(self, right_half_page_region.exists('Zoom'), 'Word found')
         assert_true(self, right_half_page_region.exists('Edit'), 'Word found')
         assert_true(self, right_half_page_region.exists('Library'), 'Word found')
