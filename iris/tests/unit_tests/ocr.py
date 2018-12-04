@@ -65,11 +65,11 @@ class Test(BaseTest):
         assert_true(self, left_half_page_region.exists('New Private Window'), 'Phrase found')
 
         click(NavBar.HAMBURGER_MENU)
-        time.sleep(2)
+        time.sleep(1)
 
-        # assert_true(self, right_half_page_region.exists('Sign in to Sync'), '"Sign in to Sync" found')
+        assert_true(self, right_half_page_region.exists('Sign in to Sync'), '"Sign in to Sync" found')
         # assert_true(self, right_half_page_region.exists('Content Blocking'), '"Content Blocking" found')
-        assert_true(self, right_half_page_region.exists('Help'), 'Word found')
+        assert_true(self, right_half_page_region.exists('Help'), '"Help" found')
         assert_true(self, right_half_page_region.exists('Zoom'), 'Word found')
         assert_true(self, right_half_page_region.exists('Edit'), 'Word found')
         assert_true(self, right_half_page_region.exists('Library'), 'Word found')

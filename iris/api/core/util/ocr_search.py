@@ -102,7 +102,7 @@ class OCRSearch:
             self.save_ocr_debug_image(self.debug_img, temp_debug)
         return return_single
 
-    def text_search_all(self, image_processing, in_region=None, in_image=None):
+    def text_search_all(self, with_image_processing, in_region=None, in_image=None):
         if in_image is None:
             stack_image = IrisCore.get_region(in_region, True)
         else:
@@ -113,17 +113,17 @@ class OCRSearch:
         input_image_array = np.array(input_image)
         self.debug_img = input_image_array
 
-        if image_processing:
+        if with_image_processing:
             input_image = process_image_for_ocr(image_array=input_image)
             input_image_array = np.array(input_image)
-            self.debug_img = cv2.cvtColor(input_image_array, cv2.COLOR_GRAY2BGR)
+            debug_img = cv2.cvtColor(input_image_array, cv2.COLOR_GRAY2BGR)
 
         processed_data = pytesseract.image_to_data(input_image)
 
         length_x, width_y = stack_image.size
         dpi_factor = max(1, int(OCR_IMAGE_SIZE / length_x))
 
-        final_data, self.debug_data = [], []
+        final_data, debug_data = [], []
         is_uhd, uhd_factor = IrisCore.get_uhd_details()
 
         for line in processed_data.split('\n'):
@@ -138,7 +138,7 @@ class OCRSearch:
                                     'precision': float(precision),
                                     'value': str(data[11])
                                     }
-                    self.debug_data.append(virtual_data)
+                    debug_data.append(virtual_data)
 
                     scale_divider = uhd_factor if is_uhd else 1
 
@@ -165,13 +165,13 @@ class OCRSearch:
                 continue
 
         # save_ocr_debug_image(debug_img, debug_data)
-        return final_data, self.debug_img, self.debug_data
+        return final_data, debug_img, debug_data
 
     def text_search_by(self, what, match_case=True, in_region=None, multiple_matches=False):
         if not isinstance(what, str):
             return ValueError(INVALID_GENERIC_INPUT)
 
-        text_dict, debug_img, debug_data = self.text_search_all(False, in_region)
+        text_dict, debug_img, self.debug_data = self.text_search_all(True, in_region)
 
         if len(text_dict) <= 0:
             return None
